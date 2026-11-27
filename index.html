@@ -1,1 +1,408 @@
-index
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pick, Shift, Serve! | A Kitchen Puzzle Game</title>
+  <meta name="description" content="Open bamboo baskets, line up matching dishes on a moving conveyor, and serve every order before time runs out in Pick, Shift, Serve!">
+  <link rel="icon" href="./assets/game-icon.webp" type="image/webp">
+  <style>
+    :root {
+      color-scheme: light;
+      --paper: #fff6e7;
+      --cream: #fffaf1;
+      --ink: #342019;
+      --muted: #684537;
+      --red: #9e3327;
+      --red-dark: #7c261d;
+      --teal: #103f43;
+      --teal-light: #daf1e8;
+      --gutter: clamp(1.25rem, 5vw, 4rem);
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      line-height: 1.55;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+    }
+
+    img { display: block; max-width: 100%; height: auto; }
+    h1, h2, h3, p, figure { margin: 0; }
+    a { color: inherit; text-underline-offset: .2em; }
+    a:hover { text-decoration-thickness: .15em; }
+
+    a:focus-visible {
+      outline: 3px solid var(--teal);
+      outline-offset: 5px;
+    }
+
+    .wrap {
+      width: min(100% - var(--gutter) * 2, 73rem);
+      margin-inline: auto;
+    }
+
+    .site-header {
+      background: var(--cream);
+      border-bottom: 1px solid #ecd6ba;
+    }
+
+    .header-inner, .footer-inner {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: .5rem 1.5rem;
+    }
+
+    .header-inner { min-height: 4.5rem; padding-block: .5rem; }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      min-height: 2.75rem;
+      font-size: .94rem;
+      font-weight: 800;
+      text-decoration: none;
+    }
+
+    .brand:hover { text-decoration: underline; }
+
+    .site-nav ul {
+      display: flex;
+      flex-wrap: wrap;
+      column-gap: clamp(.85rem, 2.5vw, 1.8rem);
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .site-nav a, .site-footer a {
+      display: inline-flex;
+      align-items: center;
+      min-height: 2.75rem;
+      font-size: .94rem;
+      font-weight: 650;
+    }
+
+    .site-nav a { color: var(--muted); text-decoration: none; }
+    .site-nav a:hover { color: var(--red-dark); text-decoration: underline; }
+
+    .hero {
+      padding-block: clamp(2.5rem, 5.5vw, 5.5rem);
+      border-bottom: 1px solid #e8cea9;
+      background: radial-gradient(ellipse at 85% 45%, #ffe3ae 0%, transparent 60%), var(--paper);
+    }
+
+    .hero-inner {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.04fr);
+      align-items: center;
+      gap: clamp(2rem, 6vw, 6rem);
+    }
+
+    .hero h1 {
+      width: min(100%, 22rem);
+      margin: 0 0 1.15rem;
+    }
+
+    .hero-tagline, h2 {
+      font-weight: 850;
+      line-height: 1.08;
+      letter-spacing: -.04em;
+      text-wrap: balance;
+    }
+
+    .hero-tagline {
+      font-size: clamp(2.15rem, 4.7vw, 4.1rem);
+      text-wrap: initial;
+    }
+
+    .hero-tagline span { display: block; }
+    .hero-tagline span:last-child { color: var(--red); }
+
+    .hero-description {
+      max-width: 36ch;
+      margin-top: 1.05rem;
+      color: var(--muted);
+      font-size: clamp(1rem, 1.7vw, 1.2rem);
+    }
+
+    .action {
+      display: inline-flex;
+      align-items: center;
+      gap: .7rem;
+      min-height: 3.1rem;
+      margin-top: 1.6rem;
+      padding: .55rem 1rem .55rem .6rem;
+      border: 1px solid var(--red-dark);
+      border-radius: .65rem;
+      background: var(--red);
+      box-shadow: 0 3px 0 var(--red-dark);
+      color: var(--cream);
+      font-weight: 750;
+      text-decoration: none;
+    }
+
+    .action:hover { background: var(--red-dark); }
+    .action img { width: 2rem; border-radius: .45rem; }
+
+    .hero-art {
+      width: min(100%, 32rem);
+      justify-self: end;
+      padding: .5rem;
+      border: 1px solid #c79555;
+      border-radius: 50% 50% 1.7rem 1.7rem / 36% 36% 1.7rem 1.7rem;
+      background: #fff0cd;
+      box-shadow: 0 .85rem 2rem #97451c24, 0 3px 0 #d8a463;
+    }
+
+    .hero-art img {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
+      object-position: center 58%;
+      border-radius: inherit;
+    }
+
+    .how-to { padding-block: clamp(3.5rem, 7vw, 6.5rem); }
+    h2 { font-size: clamp(2rem, 4vw, 3.35rem); }
+    h3 { font-size: 1.2rem; line-height: 1.2; }
+    .how-to h2 { margin-bottom: clamp(1.65rem, 4vw, 2.6rem); }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1rem;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .steps li {
+      padding: clamp(1.15rem, 2.6vw, 1.85rem);
+      border: 1px solid #e8cea9;
+      border-radius: 1.05rem;
+      background: var(--cream);
+    }
+
+    .step-art {
+      display: grid;
+      place-items: center;
+      width: 4.65rem;
+      height: 4.65rem;
+      margin-bottom: 1.1rem;
+      border: 1px solid #f1d7ad;
+      border-radius: 50%;
+      background: #ffedd2;
+    }
+
+    .step-art img { width: 3.5rem; }
+    .steps p { max-width: 33ch; margin-top: .5rem; color: var(--muted); }
+
+    .showcase {
+      padding-block: clamp(3.5rem, 7vw, 6.5rem);
+      border-top: 4px solid #d8a463;
+      background: var(--teal);
+      color: var(--cream);
+    }
+
+    .showcase-inner {
+      display: grid;
+      grid-template-columns: minmax(0, .8fr) minmax(0, 1.55fr);
+      align-items: center;
+      gap: clamp(2rem, 5vw, 4.5rem);
+    }
+
+    .features {
+      display: grid;
+      gap: 1.05rem;
+      margin: 1.55rem 0 0;
+    }
+
+    .features div { padding-top: .85rem; border-top: 1px solid #4d7774; }
+    .features dt { color: #ffda9c; font-size: 1.06rem; font-weight: 750; }
+    .features dd { max-width: 30ch; margin: .18rem 0 0; color: var(--teal-light); }
+
+    .screenshots {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: clamp(.8rem, 2.5vw, 1.6rem);
+    }
+
+    .screenshots img {
+      width: 100%;
+      padding: .28rem;
+      border: 1px solid #a28255;
+      border-radius: .95rem;
+      background: #e7bb7e;
+      box-shadow: 0 .65rem 1.6rem #061f24a6;
+    }
+
+    .screenshots figcaption {
+      margin-top: .65rem;
+      color: var(--teal-light);
+      font-size: .92rem;
+      font-weight: 650;
+    }
+
+    .site-footer {
+      padding-block: 1.65rem;
+      color: var(--muted);
+      background: var(--cream);
+    }
+
+    .footer-inner { align-items: flex-start; }
+    .site-footer strong { display: block; color: var(--ink); }
+    .site-footer address { font-style: normal; }
+    .site-footer a { overflow-wrap: anywhere; }
+
+    @media (max-width: 55rem) {
+      .showcase-inner { grid-template-columns: 1fr; }
+      .features { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.1rem; }
+    }
+
+    @media (max-width: 43rem) {
+      .hero-inner { grid-template-columns: 1fr; gap: 1.6rem; text-align: center; }
+      .hero h1, .hero-description { margin-inline: auto; }
+      .hero h1 { width: min(68%, 18rem); }
+      .hero-art { justify-self: center; width: min(100%, 26rem); }
+      .hero-art img { aspect-ratio: 1.13; }
+      .steps { grid-template-columns: 1fr; }
+      .steps li {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr);
+        align-items: start;
+        gap: .9rem;
+      }
+      .step-art { width: 3.5rem; height: 3.5rem; margin-bottom: 0; }
+      .step-art img { width: 2.65rem; }
+    }
+
+    @media (max-width: 30rem) {
+      .screenshots {
+        width: min(100%, 20rem);
+        margin-inline: auto;
+        grid-template-columns: 1fr;
+        gap: 1.25rem;
+      }
+    }
+
+    @media (max-width: 26rem) {
+      .header-inner { justify-content: center; gap: .2rem; }
+      .site-nav ul { justify-content: center; }
+      .features { grid-template-columns: 1fr; }
+      .screenshots figcaption { font-size: .85rem; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="https://pickshiftservepuzzle.github.io/" aria-label="Pick, Shift, Serve! home">Pick, Shift, Serve!</a>
+      <nav class="site-nav" aria-label="Main navigation">
+        <ul>
+          <li><a href="#how-to-play">How to play</a></li>
+          <li><a href="#screenshots">Screenshots</a></li>
+          <li><a href="#support">Support</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" aria-labelledby="game-title">
+      <div class="wrap hero-inner">
+        <div>
+          <h1 id="game-title"><img src="./assets/game-logo.webp" width="705" height="512" alt="Pick, Shift, Serve!"></h1>
+          <p class="hero-tagline"><span>Match dishes.</span> <span>Beat the clock.</span></p>
+          <p class="hero-description">Open bamboo baskets and match dishes on a moving conveyor in this kitchen puzzle game.</p>
+          <a class="action" href="https://play.google.com/store/apps/details?id=com.roundfoxgames.pickshiftserve">
+            <img src="./assets/game-icon.webp" width="128" height="128" alt="">
+            View on Google Play <span aria-hidden="true">↗</span>
+          </a>
+        </div>
+        <div class="hero-art">
+          <img src="./assets/rabbit-chef.webp" width="900" height="1050" alt="A rabbit chef holding a bamboo steamer of dumplings in a sunlit restaurant." fetchpriority="high">
+        </div>
+      </div>
+    </section>
+
+    <section class="wrap how-to" id="how-to-play" aria-labelledby="how-to-title">
+      <h2 id="how-to-title">How to play</h2>
+      <ol class="steps" role="list">
+        <li>
+          <div class="step-art"><img src="./assets/bamboo-basket.webp" width="112" height="112" alt="" loading="lazy"></div>
+          <div>
+            <h3>Pick a basket</h3>
+            <p>Tap a bamboo basket to reveal the dish inside and send it onto the conveyor.</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-art"><img src="./assets/covered-dish.webp" width="112" height="112" alt="" loading="lazy"></div>
+          <div>
+            <h3>Shift the belt</h3>
+            <p>Each new dish shifts the conveyor by one spot. When the oldest dish drops off, its basket closes again.</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-art"><img src="./assets/ramen-dish.webp" width="112" height="112" alt="" loading="lazy"></div>
+          <div>
+            <h3>Serve a match</h3>
+            <p>Fill the belt with identical dishes to serve a set. Complete every goal to clear the level.</p>
+          </div>
+        </li>
+      </ol>
+    </section>
+
+    <section class="showcase" id="screenshots" aria-labelledby="screenshots-title">
+      <div class="wrap showcase-inner">
+        <div>
+          <h2 id="screenshots-title">Inside the game</h2>
+          <dl class="features">
+            <div>
+              <dt>50 levels</dt>
+              <dd>Work through different basket layouts and order goals.</dd>
+            </div>
+            <div>
+              <dt>Orders on the clock</dt>
+              <dd>Match the dishes shown at the top of the screen before the timer runs out.</dd>
+            </div>
+            <div>
+              <dt>Different belt sizes</dt>
+              <dd>Adjust your picks as levels change how many dishes fit on the belt.</dd>
+            </div>
+          </dl>
+        </div>
+        <div class="screenshots">
+          <figure>
+            <img src="./assets/gameplay.webp" width="800" height="1033" alt="A level with order goals, a three-slot conveyor, bamboo baskets on a blue grid, and a countdown timer." loading="lazy">
+            <figcaption>A level in progress</figcaption>
+          </figure>
+          <figure>
+            <img src="./assets/main-menu.webp" width="800" height="1033" alt="The main menu with the rabbit chef, the game logo, and a button to start Level 6." loading="lazy">
+            <figcaption>Main menu</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer" id="support">
+    <div class="wrap footer-inner">
+      <div>
+        <strong>Round Fox Games</strong>
+        <span>Game developer</span>
+      </div>
+      <address>
+        <strong>Support</strong>
+        <a href="mailto:pickshiftservepuzzle@gmail.com">pickshiftservepuzzle@gmail.com</a>
+      </address>
+      <a href="https://pickshiftservepuzzle.github.io/privacy">Privacy Policy</a>
+    </div>
+  </footer>
+</body>
+</html>
